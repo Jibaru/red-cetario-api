@@ -23,6 +23,12 @@ class Receta extends Model
         'updated_at'
     ];
 
+    protected $appends =
+        [
+            'total_favoritos',
+            'total_comentarios'
+        ];
+
 
     public function comentarios()
     {
@@ -43,5 +49,21 @@ class Receta extends Model
     public function pasos()
     {
         return $this->hasMany(Paso::class, 'id_receta', 'id');
+    }
+
+    public function clientes_favoritos() 
+    {
+        return $this->belongsToMany(Cliente::class, 'recetas_favoritas', 'id_receta', 'id_cliente')
+            ->select(['id', 'nombre', 'ape_paterno', 'ape_materno']);
+    }
+
+    public function getTotalFavoritosAttribute()
+    {
+        return $this->clientes_favoritos()->count();
+    }
+
+    public function getTotalComentariosAttribute()
+    {
+        return $this->comentarios()->count();
     }
 }

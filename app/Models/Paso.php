@@ -14,7 +14,10 @@ class Paso extends Model
         'id',
         'numero_orden',
         'contenido',
-        'id_receta',
+        'id_receta'
+    ];
+
+    protected $hidden = [
         'created_at',
         'updated_at'
     ];

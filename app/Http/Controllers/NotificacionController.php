@@ -28,4 +28,13 @@ class NotificacionController extends Controller
             "mensaje" => "Notificación eliminada"
         );
     }
+
+    public function destdestroyForClientroy($id)
+    {
+        DB::table('notificaciones')->where('id_cliente', '=', $id)->delete();
+        return array(
+            "ok" => true,
+            "mensaje" => "Notificaciones eliminada"
+        );
+    }
 }

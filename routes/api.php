@@ -30,3 +30,4 @@ Route::post('/recetas/{id}/comentario', [RecetaController::class, 'comentar']);
 
 Route::get('/notificaciones', [NotificacionController::class, 'index']);
 Route::delete('/notificacion/{id}', [NotificacionController::class, 'destroy']);
+Route::delete('/notificaciones/cliente/{id}', [NotificacionController::class, 'destroyForClient']);

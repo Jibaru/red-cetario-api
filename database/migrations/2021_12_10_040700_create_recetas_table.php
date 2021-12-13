@@ -20,6 +20,9 @@ class CreateRecetasTable extends Migration
             $table->integer('tiempo_prep');
             $table->integer('tiempo_coccion');
             $table->string('url_imagen');
+            $table->string('tips')->nullable();
+            $table->string('calorias');
+            $table->string('dificultad');
             $table->string('cocina');
             $table->unsignedBigInteger('id_cliente')->nullable();
             $table->foreign('id_cliente')

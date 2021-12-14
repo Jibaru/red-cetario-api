@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comentario;
 use App\Models\Receta;
+use Illuminate\Support\Facades\DB;
 
 class RecetaController extends Controller
 {
@@ -48,6 +49,19 @@ class RecetaController extends Controller
         return array(
             "ok" => $comentario->save(),
             "comentario" => $comentario
+        );
+    }
+
+    public function nuevaRecetaFavorita(Request $request, $id)
+    {
+        DB::table('recetas_favoritas')->insert([
+            "id_receta" => $id,
+            "id_cliente" => $request->id_cliente
+        ]);
+
+        return array(
+            "ok" => true,
+            "mensaje" => "Receta agregada a favoritos"
         );
     }
 }

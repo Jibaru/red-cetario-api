@@ -28,6 +28,7 @@ Route::post('/login', [Autenticacion::class, 'login']);
 Route::get('/recetas', [RecetaController::class, 'index']);
 Route::get('/receta/{id}', [RecetaController::class, 'show']);
 Route::post('/recetas/{id}/comentario', [RecetaController::class, 'comentar']);
+Route::post('/recetas/{id}/favorito', [RecetaController::class, 'nuevaRecetaFavorita']);
 
 Route::get('/notificaciones', [NotificacionController::class, 'index']);
 Route::put('/notificaciones/{id}/fecha-visto', [NotificacionController::class, 'updateNotificacion']);

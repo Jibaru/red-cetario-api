@@ -30,7 +30,10 @@ class RecetaController extends Controller
             ])
             ->get()
             ->find($id);
-        return $receta;
+        return array(
+            "ok" => true,
+            "receta" => $receta
+        );
     }
 
     public function comentar(Request $request, $id)

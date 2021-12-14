@@ -25,6 +25,7 @@ class CreateRecetasIngredientesTable extends Migration
                 ->on('ingredientes')
                 ->onDelete('cascade');
             $table->integer('cantidad');
+            $table->string('unidad');
         });
     }
 

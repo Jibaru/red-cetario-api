@@ -20,7 +20,7 @@ class ClienteController extends Controller
 
         return array(
             'ok' => true,
-            'usuario' => $client
+            'cliente' => $client
         );
     }
 }

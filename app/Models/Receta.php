@@ -17,6 +17,9 @@ class Receta extends Model
         'tiempo_prep',
         'tiempo_coccion',
         'url_imagen',
+        'tips',
+        'calorias',
+        'dificultad',
         'cocina',
         'id_cliente',
         'created_at',
@@ -55,6 +58,11 @@ class Receta extends Model
     {
         return $this->belongsToMany(Cliente::class, 'recetas_favoritas', 'id_receta', 'id_cliente')
             ->select(['id', 'nombre', 'ape_paterno', 'ape_materno']);
+    }
+
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class, 'id', 'id_cliente' );
     }
 
     public function getTotalFavoritosAttribute()

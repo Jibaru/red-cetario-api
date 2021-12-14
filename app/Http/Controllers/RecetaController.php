@@ -10,7 +10,7 @@ class RecetaController extends Controller
 {
     public function index() 
     {
-        $recetas = Receta::all();
+        $recetas = Receta::with(['cliente'])->get();
 
         return array(
             "ok" => count($recetas) > 0,
@@ -25,6 +25,7 @@ class RecetaController extends Controller
             'ingredientes', 
             'materiales', 
             'pasos', 
+            'cliente',
             'clientes_favoritos'
             ])
             ->get()

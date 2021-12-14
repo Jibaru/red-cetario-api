@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Cliente;
+use App\Models\Notificacion;
 
 class Autenticacion extends Controller
 {
@@ -19,12 +20,19 @@ class Autenticacion extends Controller
         $cliente->ape_materno = $request->ape_materno;
         $cliente->contrasenia = Hash::make($request->contrasenia);
         $cliente->correo_electronico = $request->correo_electronico;
-
         $cliente->save();
+
+        $notificacion = new Notificacion();
+        $notificacion->titulo = 'Bienvenida';
+        $notificacion->descripcion = 'Bienvenido al mundo de red-cetarios';
+        $notificacion->fecha_envio = date("Y/m/d");
+        $notificacion->id_cliente = $cliente->id;
+        $notificacion->save();
         
         return array(
             "ok" => true,
-            "cliente" => $cliente
+            "cliente" => $cliente,
+            "notificacion" => $notificacion
         );
     }
 

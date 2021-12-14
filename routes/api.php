@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Autenticacion;
 use App\Http\Controllers\RecetaController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\ClienteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +30,8 @@ Route::get('/receta/{id}', [RecetaController::class, 'show']);
 Route::post('/recetas/{id}/comentario', [RecetaController::class, 'comentar']);
 
 Route::get('/notificaciones', [NotificacionController::class, 'index']);
+Route::put('/notificaciones/{id}/fecha-visto', [NotificacionController::class, 'updateNotificacion']);
 Route::delete('/notificacion/{id}', [NotificacionController::class, 'destroy']);
 Route::delete('/notificaciones/cliente/{id}', [NotificacionController::class, 'destroyForClient']);
+
+Route::put('/clientes/{id}', [ClienteController::class, 'updateClient']);

@@ -29,12 +29,24 @@ class NotificacionController extends Controller
         );
     }
 
-    public function destdestroyForClientroy($id)
+    public function destroyForClient($id)
     {
         DB::table('notificaciones')->where('id_cliente', '=', $id)->delete();
         return array(
             "ok" => true,
             "mensaje" => "Notificaciones eliminada"
+        );
+    }
+
+    public function updateNotificacion($id)
+    {
+        $notificacion = Notificacion::find($id);
+        $notificacion->fecha_visto = date("Y/m/d");
+        $notificacion->save();
+
+        return array(
+            'ok' => true,
+            'usuario' => $notificacion
         );
     }
 }

@@ -9,9 +9,9 @@ type Cliente struct {
 	ApeMaterno        string         `json:"ape_materno"`
 	Contrasenia       string         `json:"-"`
 	CorreoElectronico string         `json:"correo_electronico"`
-	Recetas           []Receta       `json:"recetas,omitempty" gorm:"foreignKey:IDCliente"`
-	Notificaciones    []Notificacion `json:"notificaciones,omitempty" gorm:"foreignKey:IDCliente"`
-	Favoritos         []Receta       `json:"favoritos,omitempty" gorm:"many2many:recetas_favoritas"`
+	Recetas           []Receta       `json:"recetas" gorm:"foreignKey:IDCliente"`
+	Notificaciones    []Notificacion `json:"notificaciones" gorm:"foreignKey:IDCliente"`
+	Favoritos         []Receta       `json:"favoritos" gorm:"many2many:recetas_favoritas"`
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
 }

@@ -7,7 +7,7 @@ type Notificacion struct {
 	Titulo      string     `json:"titulo"`
 	Descripcion string     `json:"descripcion"`
 	FechaEnvio  time.Time  `json:"fecha_envio"`
-	FechaVisto  *time.Time `json:"fecha_visto,omitempty"`
+	FechaVisto  *time.Time `json:"fecha_visto"`
 	IDCliente   uint       `json:"id_cliente"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`

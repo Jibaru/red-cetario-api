@@ -9,16 +9,16 @@ type Receta struct {
 	TiempoPrep        int           `json:"tiempo_prep"`
 	TiempoCoccion     int           `json:"tiempo_coccion"`
 	URLImagen         string        `json:"url_imagen"`
-	Tips              *string       `json:"tips,omitempty"`
+	Tips              *string       `json:"tips"`
 	Calorias          string        `json:"calorias"`
 	Dificultad        string        `json:"dificultad"`
 	Cocina            string        `json:"cocina"`
-	IDCliente         *uint         `json:"id_cliente,omitempty"`
-	Cliente           Cliente       `json:"cliente,omitempty" gorm:"foreignKey:IDCliente"`
-	Ingredientes      []Ingrediente `json:"ingredientes,omitempty" gorm:"many2many:recetas_ingredientes"`
-	Materiales        []Material    `json:"materiales,omitempty" gorm:"many2many:recetas_materiales"`
-	Pasos             []Paso        `json:"pasos,omitempty" gorm:"foreignKey:IDReceta"`
-	ClientesFavoritos []Cliente     `json:"clientes_favoritos,omitempty" gorm:"many2many:recetas_favoritas"`
+	IDCliente         *uint         `json:"id_cliente"`
+	Cliente           Cliente       `json:"cliente" gorm:"foreignKey:IDCliente"`
+	Ingredientes      []Ingrediente `json:"ingredientes" gorm:"many2many:recetas_ingredientes"`
+	Materiales        []Material    `json:"materiales" gorm:"many2many:recetas_materiales"`
+	Pasos             []Paso        `json:"pasos" gorm:"foreignKey:IDReceta"`
+	ClientesFavoritos []Cliente     `json:"clientes_favoritos" gorm:"many2many:recetas_favoritas"`
 	CreatedAt         time.Time     `json:"created_at"`
 	UpdatedAt         time.Time     `json:"updated_at"`
 }

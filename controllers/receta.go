@@ -17,7 +17,7 @@ func GetRecetas(c *gin.Context) {
 func GetReceta(c *gin.Context) {
 	id := c.Param("id")
 	var receta models.Receta
-	if err := DB.Preload("Cliente").Preload("Ingredientes").Preload("Materiales").Preload("Pasos").Preload("ClientesFavoritos").First(&receta, id).Error; err != nil {
+	if err := DB.Preload("Cliente").Preload("Ingredientes").Preload("Materiales").Preload("Pasos").Preload("ClientesFavoritos").Preload("Comentarios").First(&receta, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"ok": false, "mensaje": "Receta no encontrada"})
 		return
 	}

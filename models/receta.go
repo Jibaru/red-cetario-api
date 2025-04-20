@@ -19,6 +19,7 @@ type Receta struct {
 	Materiales        []Material    `json:"materiales" gorm:"many2many:recetas_materiales"`
 	Pasos             []Paso        `json:"pasos" gorm:"foreignKey:IDReceta"`
 	ClientesFavoritos []Cliente     `json:"clientes_favoritos" gorm:"many2many:recetas_favoritas"`
+	Comentarios       []Comentario  `json:"comentarios" gorm:"foreignKey:IDReceta"`
 	CreatedAt         time.Time     `json:"created_at"`
 	UpdatedAt         time.Time     `json:"updated_at"`
 }

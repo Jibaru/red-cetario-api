@@ -9,15 +9,84 @@ import (
 )
 
 func GetRecetas(c *gin.Context) {
+	db := DB
 	logger := GetLogger(c)
 	logger.InfoContext(c, "get recipes called", "path", c.Request.URL.Path)
 
+	// 1) Obtener todas las recetas
 	var recetas []models.Receta
-	DB.Find(&recetas)
+	db.Find(&recetas)
 
-	logger.InfoContext(c, "recipes retrieved", "count", len(recetas))
+	if len(recetas) == 0 {
+		c.JSON(http.StatusOK, gin.H{"ok": false, "recetas": []any{}})
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{"ok": len(recetas) > 0, "recetas": recetas})
+	// 2) Obtener favoritos por receta (map)
+	type favCount struct {
+		IDReceta uint
+		Total    int
+	}
+	var favs []favCount
+	db.
+		Table("recetas_favoritas").
+		Select("id_receta, COUNT(*) as total").
+		Group("id_receta").
+		Scan(&favs)
+
+	favMap := make(map[uint]int)
+	for _, f := range favs {
+		favMap[f.IDReceta] = f.Total
+	}
+
+	// 3) Obtener todos los clientes relacionados por ID
+	var clienteIDs []uint
+	for _, r := range recetas {
+		if r.IDCliente != nil {
+			clienteIDs = append(clienteIDs, *r.IDCliente)
+		}
+	}
+
+	var clientes []models.Cliente
+	if len(clienteIDs) > 0 {
+		db.Where("id IN ?", clienteIDs).Find(&clientes)
+	}
+
+	clienteMap := make(map[uint]models.Cliente)
+	for _, c := range clientes {
+		clienteMap[c.ID] = c
+	}
+
+	// 4) Armar respuesta
+	var respuesta []gin.H
+	for _, r := range recetas {
+		clienteData := gin.H{}
+		if r.IDCliente != nil {
+			if cliente, ok := clienteMap[*r.IDCliente]; ok {
+				clienteData = gin.H{
+					"id":                 cliente.ID,
+					"nombre":             cliente.Nombre,
+					"ape_paterno":        cliente.ApePaterno,
+					"ape_materno":        cliente.ApeMaterno,
+					"correo_electronico": cliente.CorreoElectronico,
+				}
+			}
+		}
+
+		respuesta = append(respuesta, gin.H{
+			"id":              r.ID,
+			"titulo":          r.Titulo,
+			"url_imagen":      r.URLImagen,
+			"tiempo_prep":     r.TiempoPrep,
+			"tiempo_coccion":  r.TiempoCoccion,
+			"cocina":          r.Cocina,
+			"total_favoritos": favMap[r.ID],
+			"cliente":         clienteData,
+		})
+	}
+
+	logger.InfoContext(c, "recipes retrieved", "count", len(respuesta))
+	c.JSON(http.StatusOK, gin.H{"ok": true, "recetas": respuesta})
 }
 
 func GetReceta(c *gin.Context) {

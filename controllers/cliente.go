@@ -9,6 +9,9 @@ import (
 )
 
 func UpdateCliente(c *gin.Context) {
+	logger := GetLogger(c)
+	logger.InfoContext(c, "update client called", "path", c.Request.URL.Path)
+
 	id := c.Param("id")
 	var input struct {
 		Nombre            string `json:"nombre"`
@@ -17,6 +20,7 @@ func UpdateCliente(c *gin.Context) {
 		CorreoElectronico string `json:"correo_electronico"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
+		logger.ErrorContext(c, "update client failed", "error", err)
 		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "mensaje": err.Error()})
 		return
 	}
@@ -26,5 +30,8 @@ func UpdateCliente(c *gin.Context) {
 		ApeMaterno:        input.ApeMaterno,
 		CorreoElectronico: input.CorreoElectronico,
 	})
+
+	logger.InfoContext(c, "client updated", "client_id", id)
+
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }

@@ -17,6 +17,6 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	s := server.New(db)
+	s := server.New(db, cfg)
 	s.Run(":8080")
 }

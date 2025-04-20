@@ -9,7 +9,9 @@ import (
 )
 
 type Config struct {
-	DBURI string
+	DBURI        string
+	LoggerURL    string
+	LoggerAppKey string
 }
 
 func Load() Config {
@@ -20,12 +22,25 @@ func Load() Config {
 			log.Fatal("error loading .env", err)
 		}
 	}
+
 	dbURI, ok := os.LookupEnv("DB_URI")
 	if !ok {
 		log.Fatal("DB_URI not configured")
 	}
 
+	loggerURL, ok := os.LookupEnv("LOGGER_URL")
+	if !ok {
+		log.Fatal("LOGGER_URL not configured")
+	}
+
+	loggerAppKey, ok := os.LookupEnv("LOGGER_APP_KEY")
+	if !ok {
+		log.Fatal("LOGGER_APP_KEY not configured")
+	}
+
 	return Config{
-		DBURI: dbURI,
+		DBURI:        dbURI,
+		LoggerURL:    loggerURL,
+		LoggerAppKey: loggerAppKey,
 	}
 }

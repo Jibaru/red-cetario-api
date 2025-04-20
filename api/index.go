@@ -24,5 +24,5 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dbconn.Close()
 
-	server.New(db).ServeHTTP(w, r)
+	server.New(db, cfg).ServeHTTP(w, r)
 }

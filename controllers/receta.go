@@ -34,77 +34,23 @@ func GetReceta(c *gin.Context) {
 		return
 	}
 
-	// 2) Totales
-	var totalFav int64
-	db.Model(&models.RecetaFavorita{}).
-		Where("id_receta = ?", receta.ID).
-		Count(&totalFav)
-
-	var totalCom int64
-	db.Model(&models.Comentario{}).
-		Where("id_receta = ?", receta.ID).
-		Count(&totalCom)
-
-	// 3) Cliente
+	// 2) Cliente
 	var cliente models.Cliente
 	if receta.IDCliente != nil {
 		db.First(&cliente, *receta.IDCliente)
 	}
 
-	// 4) Comentarios
+	// 3) Comentarios
 	var comentarios []models.Comentario
-	db.
-		Select("id, descripcion, created_at").
+	db.Select("id, descripcion, created_at").
 		Where("id_receta = ?", receta.ID).
 		Find(&comentarios)
 
-	// 5) Ingredientes + pivote
-	type ingredienteResp struct {
-		ID          uint   `json:"id"`
-		Nombre      string `json:"nombre"`
-		Descripcion string `json:"descripcion"`
-		Pivot       struct {
-			Cantidad int    `json:"cantidad"`
-			Unidad   string `json:"unidad"`
-		} `json:"pivot"`
-	}
-	var ings []models.RecetaIngrediente
-	db.Where("id_receta = ?", receta.ID).Find(&ings)
-
-	var ingredientes []ingredienteResp
-	for _, piv := range ings {
-		var ing models.Ingrediente
-		db.First(&ing, piv.IDIngrediente)
-
-		ir := ingredienteResp{
-			ID:          ing.ID,
-			Nombre:      ing.Nombre,
-			Descripcion: ing.Descripcion,
-		}
-		ir.Pivot.Cantidad = piv.Cantidad
-		ir.Pivot.Unidad = piv.Unidad
-		ingredientes = append(ingredientes, ir)
-	}
-
-	// 6) Materiales
-	var matsPiv []models.RecetaMaterial
-	db.Where("id_receta = ?", receta.ID).Find(&matsPiv)
-
-	var materiales []models.Material
-	for _, mp := range matsPiv {
-		var m models.Material
-		db.First(&m, mp.IDMaterial)
-		materiales = append(materiales, m)
-	}
-
-	// 7) Pasos
+	// 4) Pasos
 	var pasos []models.Paso
-	db.
-		Where("id_receta = ?", receta.ID).
-		Order("numero_orden").
-		Find(&pasos)
+	db.Where("id_receta = ?", receta.ID).Order("numero_orden").Find(&pasos)
 
-	// 8) Clientes favoritos (sólo ID)
+	// 5) Clientes favoritos
 	type clienteID struct {
 		ID uint `json:"id"`
 	}
@@ -115,6 +61,66 @@ func GetReceta(c *gin.Context) {
 	for _, f := range favsPiv {
 		clientesFav = append(clientesFav, clienteID{ID: f.IDCliente})
 	}
+
+	// 6) Ingredientes + pivote
+	type ingredienteResp struct {
+		ID          uint   `json:"id"`
+		Nombre      string `json:"nombre"`
+		Descripcion string `json:"descripcion"`
+		Pivot       struct {
+			Cantidad int    `json:"cantidad"`
+			Unidad   string `json:"unidad"`
+		} `json:"pivot"`
+	}
+
+	var recetasIngs []models.RecetaIngrediente
+	db.Where("id_receta = ?", receta.ID).Find(&recetasIngs)
+
+	var ingIDs []uint
+	for _, r := range recetasIngs {
+		ingIDs = append(ingIDs, r.IDIngrediente)
+	}
+
+	var ingredientesDB []models.Ingrediente
+	if len(ingIDs) > 0 {
+		db.Where("id IN ?", ingIDs).Find(&ingredientesDB)
+	}
+
+	ingMap := make(map[uint]models.Ingrediente)
+	for _, ing := range ingredientesDB {
+		ingMap[ing.ID] = ing
+	}
+
+	var ingredientes []ingredienteResp
+	for _, r := range recetasIngs {
+		ing := ingMap[r.IDIngrediente]
+		item := ingredienteResp{
+			ID:          ing.ID,
+			Nombre:      ing.Nombre,
+			Descripcion: ing.Descripcion,
+		}
+		item.Pivot.Cantidad = r.Cantidad
+		item.Pivot.Unidad = r.Unidad
+		ingredientes = append(ingredientes, item)
+	}
+
+	// 7) Materiales
+	var recetasMats []models.RecetaMaterial
+	db.Where("id_receta = ?", receta.ID).Find(&recetasMats)
+
+	var matIDs []uint
+	for _, m := range recetasMats {
+		matIDs = append(matIDs, m.IDMaterial)
+	}
+
+	var materiales []models.Material
+	if len(matIDs) > 0 {
+		db.Where("id IN ?", matIDs).Find(&materiales)
+	}
+
+	// 8) Totales
+	totalFav := len(favsPiv)
+	totalCom := len(comentarios)
 
 	// 9) Respuesta final
 	c.JSON(http.StatusOK, gin.H{

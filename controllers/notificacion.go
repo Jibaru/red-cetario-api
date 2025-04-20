@@ -12,8 +12,11 @@ import (
 func GetNotificaciones(c *gin.Context) {
 	logger := GetLogger(c)
 	logger.InfoContext(c, "get notifications called", "path", c.Request.URL.Path)
+
+	clienteID := c.Query("idCliente")
+
 	var notas []models.Notificacion
-	DB.Find(&notas)
+	DB.Where("id_cliente = ?", clienteID).Find(&notas)
 
 	logger.InfoContext(c, "notifications retrieved", "count", len(notas))
 

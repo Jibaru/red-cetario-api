@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"log"
 	"log/slog"
 	"redcetarioapi/logger"
 
@@ -22,7 +22,7 @@ func Logger(url, appKey string) gin.HandlerFunc {
 		c.Next()
 
 		if err := batch.Flush(); err != nil {
-			fmt.Printf("error flushing logs: %v\n", err)
+			log.Printf("error flushing logs: %v\n", err)
 		}
 	}
 }

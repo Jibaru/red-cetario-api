@@ -13,6 +13,7 @@ const LoggerKey string = "logger"
 
 func Logger(url, appKey string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Printf("logger initialized")
 		batch := logger.NewSaaSBatchHandler(url, appKey)
 		logger := slog.New(batch)
 
@@ -21,6 +22,7 @@ func Logger(url, appKey string) gin.HandlerFunc {
 
 		c.Next()
 
+		log.Printf("logger flush started")
 		if err := batch.Flush(); err != nil {
 			log.Printf("error flushing logs: %v\n", err)
 		}

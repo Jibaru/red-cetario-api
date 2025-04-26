@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -70,6 +71,7 @@ func (h *saasBatchHandler) Flush() error {
 	h.mu.Unlock()
 
 	if len(logs) == 0 {
+		log.Println("no logs to flush")
 		return nil
 	}
 
@@ -79,11 +81,13 @@ func (h *saasBatchHandler) Flush() error {
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {
+		log.Println("error marshalling logs:", err)
 		return err
 	}
 
 	req, err := http.NewRequest("POST", h.url, bytes.NewBuffer(body))
 	if err != nil {
+		log.Println("error creating request:", err)
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -91,12 +95,16 @@ func (h *saasBatchHandler) Flush() error {
 
 	resp, err := h.client.Do(req)
 	if err != nil {
+		log.Println("error sending request:", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Println("error response from server:", resp.Status)
 		return fmt.Errorf("batch webhook returned %s", resp.Status)
 	}
+
+	log.Println("logs flushed successfully")
 	return nil
 }
